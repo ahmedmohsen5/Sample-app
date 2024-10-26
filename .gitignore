@@ -7,3 +7,5 @@ node_modules
 terraform/build_app_EC2/.terraform.lock.*
 terraform/build_app_EC2/.terraform
 terraform/build_app_EC2/terraform.tfstat.*
+terraform/build_app_EC2/terraform.tfstate
+terraform/build_app_EC2/terraform.tfstate.backup
