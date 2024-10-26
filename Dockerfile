@@ -7,7 +7,7 @@ RUN mkdir -p /home/app
 
 COPY ./app /home/app
 
-# set default dir so that next commands executes in /home/app dir
+# set default dir so that next commands executes in /home/app dirdfdfa
 WORKDIR /home/app
 
 # will execute npm install in /home/app because of WORKDIR
