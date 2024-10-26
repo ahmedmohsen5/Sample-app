@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name:  express
+  labels:
+    name:  express
+spec:
+  template:
+    metadata:
+      labels:
+        name:  express
+    spec:
+      containers:
+      - image:  mongo-express
+        name:  express
+        resources:
+          requests:
+            cpu: "20m"
+            memory: "55M"
+          limits:
+            cpu: "128M"
+            memory: "200m"
+        envFrom:
+          - configMapRef:
+               name: express
+          - secretRef:
+              name: mongodb_secret  
+        ports:
+        - containerPort:  5000
+          name:  my-name
+        volumeMounts:
+        - mountPath: /data
+          name: data
+      volumes:
+        - name: data
+          emptyDir: {}
+      restartPolicy: Always
+      imagePullPolicy: Always

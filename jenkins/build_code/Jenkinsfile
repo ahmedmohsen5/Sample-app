@@ -1,0 +1,54 @@
+pipeline{
+    agent any
+
+      environment {
+        DOCKER_REGISTRY = 'docker.io'           // Replace with your Docker registry
+        DOCKER_REPO = 'ahmed5555555555/simple-app' // Replace with your Docker repository
+        IMAGE_TAG = 'V1'                    // Replace with the tag you want to use
+        DOCKER_CREDENTIALS_ID = 'dockerhub' // Replace with the Jenkins credentials ID
+    }
+    
+
+    stages{
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build Docker image from the Dockerfile in the repository
+                    dockerImage = docker.build("${DOCKER_REPO}:${IMAGE_TAG}")
+                }
+            }
+        }
+         stage('Login to Docker') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "$DOCKER_CREDENTIALS_ID", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    script {
+                        // Login to Docker
+                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                    }
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    
+                    echo 'ready to push'
+                     //Push the Docker image to the registry
+                    sh "docker push ${DOCKER_REPO}:${IMAGE_TAG}"
+                    }
+                }
+            }
+        
+    }
+    post{
+        always{
+            echo "========always========"
+        }
+        success{
+            echo "========pipeline executed successfully ========"
+        }
+        failure{
+            echo "========pipeline execution failed========"
+        }
+    }
+}

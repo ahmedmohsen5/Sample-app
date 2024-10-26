@@ -1,0 +1,9 @@
+node_modules
+
+.DS_Store
+
+.idea/*
+
+terraform/build_app_EC2/.terraform.lock.*
+terraform/build_app_EC2/.terraform
+terraform/build_app_EC2/terraform.tfstat.*

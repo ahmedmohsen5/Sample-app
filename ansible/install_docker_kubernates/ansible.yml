@@ -1,0 +1,56 @@
+- name: Install Docker 
+  hosts: docker_machine
+  become: true
+  tasks:
+
+  - name: Get current username
+    ansible.builtin.set_fact:
+        current_user: "{{ ansible_env.USER }}"
+  - name: Display the current user
+    debug:
+        msg: "The current user is: {{ ansible_user }}"
+
+  - name: Install the Dependencies
+    ansible.builtin.yum:
+      name:
+        - yum-utils
+        - device-mapper-persistent-data
+        - lvm2
+      state: present
+      update_cache: true
+
+  - name: Set up the Docker repository
+    yum_repository:
+        name: docker-ce-stable
+        description: Docker CE Stable - $basearch
+        baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
+        enabled: true
+        gpgcheck: true
+        gpgkey: https://download.docker.com/linux/centos/gpg
+  
+  - name: update the package
+    ansible.builtin.yum:
+      update_cache: true
+  - name: Install Docker
+    ansible.builtin.yum:
+      name:
+        - docker
+      state: present
+
+
+      
+  - name: Add ec2-user to the Docker group
+    user:
+        name: '{{ ansible_user }} ' # The username to be added to the Docker group
+        groups: docker
+        append: yes
+  - name: edit the docker.socket permsion
+    ansible.builtin.file:
+      path: /var/run/docker.sock
+      mode: '777'
+
+  - name: start and enable Docker
+    ansible.builtin.systemd:
+      name: docker
+      state: reloaded
+      enabled: true

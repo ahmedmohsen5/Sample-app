@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name:  application
+  labels:
+    name:  application
+spec:
+  template:
+    metadata:
+      labels:
+        name:  application
+    spec:
+      containers:
+      - image:  ahmed5555555555/simple-app:latest
+        name:  app
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "55M"
+          limits:
+            cpu: "500m"
+            memory: "128M"    
+        ports:
+        - containerPort:  3000
+      restartPolicy: Always
+      imagePullPolicy: Always

@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+
+    tools {
+        terraform 'Terraform' // Name set in Global Tool Configuration
+    }
+
+    environment {
+        TF_WORKING_DIR = 'terraform/' // Directory with Terraform configuration files
+    }
+
+    stages {
+        stage('Initialize') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
+                    dir(TF_WORKING_DIR) {
+                        terraformInit()
+                    }
+                }
+            }
+        }
+
+        stage('Validate') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
+                    dir(TF_WORKING_DIR) {
+                        terraformValidate()
+                    }
+                }
+            }
+        }
+
+        stage('Plan') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
+                    dir(TF_WORKING_DIR) {
+                        terraformPlan(saveToFile: true, planFile: 'tfplan')
+                    }
+                }
+            }
+        }
+
+        stage('Apply') {
+            when {
+                branch 'main' // Restrict to specific branch
+            }
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
+                    dir(TF_WORKING_DIR) {
+                        terraformApply(planFile: 'tfplan')
+                    }
+                }
+            }
+        }
+    }
+}
